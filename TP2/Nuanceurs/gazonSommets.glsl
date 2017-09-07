@@ -192,7 +192,7 @@ void main (void)
     normal_cameraSpace = normalize(MV_N * vn);
     
     //Coordonée de texture:
-    // ...
+    fragTexCoord = vt;  // Pass the tex coordinates to the fragment shader
     
     // Transformation de la position
     gl_Position = MVP * vec4(vp,1.0);

@@ -33,9 +33,9 @@ void main (void)
     out_color = fragColor;
     
     //Contribution de la texture:
-    // ...
+    vec4 surfaceColour = texture(colorMap, fragTexCoord);
     
-    color = clamp(out_color, 0.0, 1.0);
+    color = vec4(clamp(out_color, 0.0, 1.0).rgb * surfaceColour.rgb, surfaceColour.a);
     
     
     
