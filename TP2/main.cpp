@@ -534,7 +534,9 @@ void dessinerScene()
 
 	
 	// Décommenter pour afficher!
-	// dessinerSkybox();
+	glDepthMask(0);
+	dessinerSkybox();
+	glDepthMask(1);
 
 	dessinerGazon();
 

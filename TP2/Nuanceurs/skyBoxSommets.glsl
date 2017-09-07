@@ -12,5 +12,5 @@ void main (void)
     // effectuons la base : la transformation du vertex
     gl_Position = (MVP * vec4(vp, 1.0));
     
-    // ...
+    fragTexCoord = vp;
 }
