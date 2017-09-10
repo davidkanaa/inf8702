@@ -182,7 +182,7 @@ void main (void)
     //Vecteurs de la surface vers la lumière
     light0Vect = (Lights[0].Position.xyz) - offset;
     light1Vect = (Lights[1].Position.xyz) - offset;
-    light2Vect = (Lights[2].Position.xyz) - offset;
+    light2Vect = -(Lights[2].Position.xyz);
 
     // Compléter afin d'ajouter la contribution de la texture:
     vec4 out_color;
