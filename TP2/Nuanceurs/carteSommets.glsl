@@ -243,7 +243,7 @@ mat3 rotMatZ(float theta)
 
 // Animation de flexion de la carte (displacement mapping)
 // Cette fonction transforme les variables en entrée
-void animation(inout vec4 position, inout vec3 normal, inout vec3 tangent)
+void animate(inout vec4 position, inout vec3 normal, inout vec3 tangent)
 { 
 	float amplitude; // Amplitude selon le temps et l'espace (animation) 
 	float deltaPos;    // Variation de la hauteur du vertex
@@ -254,29 +254,22 @@ void animation(inout vec4 position, inout vec3 normal, inout vec3 tangent)
 	// Déformation selon l'amplitude (time)
     if(amplitude < 0.0) {
         // Déformation sur l'axe des X selon la position X
-		// TODO: 
-		// Remplacer le commentaire ci-bas par la valeur de position necessaire
-        deltaPos = amplitude * sin(/*position X * */ PI);
+        deltaPos = amplitude * sin(vt.x * PI);
 		theta = 0.5 * (vt.x - 0.5) * PI * sin(-amplitude);
-		 // TODO:
-		 //rotMat= ...
+		rotMat = rotMatY(theta);
     } else {
         // Déformation sur l'axe des Y, selon la position Y
-		// TODO: 
-		// Remplacer le commentaire ci-bas par la valeur de position necessaire
-        deltaPos = amplitude * sin(/*position Y * */ PI);
+        deltaPos = amplitude * sin(vt.y * PI);
 		float theta = 0.5 * (vt.y - 0.5) * PI * sin(amplitude);
-		 // TODO:
-		//rotMat = ...
+		rotMat = rotMatY(theta);
     }
-    // TODO:
+    
     // Obtenir le déplacement du sommets en cours
-    // position = ..
+    position = vec4(position.xy, position.z + deltaPos, position.w);
 
-    // TODO:
     // Trouver les nouvelles normale + tangente après déplacement du sommet
-    // normal = ...
-    // tangent = ...
+    normal = rotMat * normal;
+    tangent = rotMat * tangent;
 }
 
 // Transformation des coordonnées d'espace tangent
@@ -323,9 +316,9 @@ void main () {
    fragTexCoord = vt;
    
    // Transformation du vertex selon le temps
-   // if (animOn == 1) {
-   //   animate(position, normal, tangent);
-   // }
+   if (animOn == 1) {
+     animate(position, normal, tangent);
+   }
    
     //On passe au référenciel de caméra (ou eye-coordinate)
     VertexPosition_cameraSpace = ( V * M * position).xyz;
