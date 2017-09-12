@@ -62,49 +62,129 @@ const float PI_INV = 1.0 / PI;        // Pi inversé
 // Calcul pour une lumière ponctuelle
 void pointLight(in int i, in vec3 normal, in vec3 eye, in vec3 csPosition3)
 {
-   // À compléter, inspirez vous du gazon!
+	float nDotVP;       // Produit scalaire entre VP et la normale
+	float attenuation;  // facteur d'atténuation calculé
+	float d;            // distance entre lumière et fragment
+	vec3  VP;           // Vecteur lumière
+
+	// compute the light vector
+	vec3 lightVect = (Lights[i].Position.xyz) - csPosition3;
+	VP = lightVect;
+
+	// Calculer distance à la lumière
+	d = length(lightVect);
+
+	// Normaliser VP
+	VP = normalize(VP);
+
+	// Calculer l'atténuation due à la distance
+	attenuation = 1.0 / dot(Lights[i].Attenuation, vec3(1.0, d, pow(d, 2)));   
+   
+	nDotVP = dot(normal, VP);
+
+	// Calculer les contributions ambiantes et diffuses
+	Ambient  += attenuation * vec4(Lights[i].Ambient, 1.0);
+	Diffuse  += attenuation * vec4(Lights[i].Diffuse, 1.0) * nDotVP;
 }
 
 
 // Calcul pour une lumière "spot"
 void spotLight(in int i, in vec3 normal, in vec3 eye, in vec3 csPosition3)
 {
-    // À compléter, inspirez vous du gazon!
+	float nDotVP;             // Produit scalaire entre VP et la normale
+	float spotAttenuation;    // Facteur d'atténuation du spot
+	float attenuation;        // Facteur d'atténuation du à la distance
+	float angleEntreLumEtSpot;// Angle entre le rayon lumieux et le milieu du cone
+	float d;                  // Distance à la lumière
+	vec3  VP;                 // Vecteur lumière
+
+    // compute the light vector
+	vec3 lightVect = (Lights[i].Position.xyz) - csPosition3;
+	VP = lightVect;
+
+	// Calculer la distance à al lumière
+	d = length(lightVect);
+
+	// Normaliser VP
+	VP = normalize(VP);
+
+	// Calculer l'atténuation due à la distance
+	attenuation = 1.0 / dot(Lights[i].Attenuation, vec3(1.0, d, pow(d, 2)));
+
+	// Le fragment est-il à l'intérieur du cône de lumière ?
+	vec3 spotDir = normalize(Lights[i].SpotDir);  // normalize in case the `Lights[1].SpotDir` isn't a unit vector 
+	vec3 lightDir = -VP;
+	angleEntreLumEtSpot = degrees(acos(dot(lightDir, spotDir)));
+
+	if (angleEntreLumEtSpot > Lights[i].SpotCutoff)
+	{
+		spotAttenuation = 0.0; // en dehors... aucune contribution
+	}
+	else
+	{
+		spotAttenuation = 1.0; // there's no spot attenuation whenever the ray is within the cone of the spotlight
+
+	}
+
+	// Combine les atténuation du spot et de la distance
+	attenuation *= spotAttenuation;
+
+	nDotVP = dot(normal, VP);
+
+	// Calculer les contributions ambiantes et diffuses
+	Ambient  += attenuation * vec4(Lights[i].Ambient, 1.0);
+	Diffuse  += attenuation * vec4(Lights[i].Diffuse * nDotVP, 1.0);
 }
 
 
 // Calcul pour une lumière directionnelle
 void directionalLight(in int i, in vec3 normal)
 {
-   // À compléter, inspirez vous du gazon!
+	vec3  VP;             // Vecteur lumière
+	float nDotVP;         // Produit scalaire entre VP et la normale
+	// compute the light vector
+	vec3 lightVect = -(Lights[i].Position.xyz);
+	VP = lightVect;
+
+	// Normaliser VP
+	VP = normalize(VP);
+
+	// There is no attenuation due to distance (hypothesis for directional lights)
+	// attenuation = 1.0;
+
+	nDotVP = dot(normal, VP);
+
+	// Calculer les contributions ambiantes et diffuses
+	Ambient  += vec4(Lights[i].Ambient, 1.0);
+	Diffuse  += vec4(Lights[i].Diffuse * nDotVP, 1.0);
 }
 
 // éclairage pour la surface du dessus
 void frontLighting(in vec3 normal, in vec3 csPosition)
 {
-   vec4 color = vec4(1.0, 1.0, 1.0, 1.0);
-   const vec3 eye = normalize(-csPosition);
+	vec4 color = vec4(1.0, 1.0, 1.0, 1.0);
+	const vec3 eye = normalize(-csPosition);
 
-   // Clear the light intensity accumulators
-   Ambient  = vec4 (0.0, 0.0, 0.0, 1.0);
-   Diffuse  = vec4 (0.0, 0.0, 0.0, 1.0);
+	// Clear the light intensity accumulators
+	Ambient  = vec4 (0.0, 0.0, 0.0, 1.0);
+	Diffuse  = vec4 (0.0, 0.0, 0.0, 1.0);
 
-   // Calcul des 3 lumières
-   // if (pointLightOn == 1) {
-   //    pointLight(0, normal, eye, csPosition);
-   // }
-   // 
-   // if (dirLightOn == 1) {
-   //      directionalLight(2, normal);
-   // }
-   // 
-   // if (spotLightOn == 1) {
-   //    spotLight(1, normal, eye, csPosition);
-   // }
+	// Calcul des 3 lumières
+	if (pointLightOn == 1) {
+		pointLight(0, normal, eye, csPosition);
+	}
+   
+	if (dirLightOn == 1) {
+		directionalLight(2, normal);
+	}
+   
+	if (spotLightOn == 1) {
+		spotLight(1, normal, eye, csPosition);
+	}
 
-   color = Ambient  * frontMat.Ambient + Diffuse  * frontMat.Diffuse;
-   color = clamp( color, 0.0, 1.0 );
-   frontFragColor = color;
+	color = Ambient  * frontMat.Ambient + Diffuse  * frontMat.Diffuse;
+	color = clamp( color, 0.0, 1.0 );
+	frontFragColor = color;
 }
 
 
@@ -119,17 +199,17 @@ void backLighting(in vec3 invNormal, in vec3 csPosition)
    Diffuse  = vec4 (0.0);
 
    // Calcul des 3 lumières
-   // if (pointLightOn == 1) {
-   //   pointLight(0, invNormal, eye, csPosition);
-   // }
-   //
-   // if (dirLightOn == 1) {
-   //   directionalLight(2, invNormal);
-   // }
-   //
-   // if (spotLightOn == 1) {
-   //    spotLight(1, invNormal, eye, csPosition);
-   // }
+   if (pointLightOn == 1) {
+     pointLight(0, invNormal, eye, csPosition);
+   }
+   
+   if (dirLightOn == 1) {
+     directionalLight(2, invNormal);
+   }
+   
+   if (spotLightOn == 1) {
+      spotLight(1, invNormal, eye, csPosition);
+   }
 
    color = Ambient  * backMat.Ambient + Diffuse * backMat.Diffuse;
    color = clamp( color, 0.0, 1.0 );

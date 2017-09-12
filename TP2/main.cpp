@@ -511,12 +511,12 @@ void dessinerSkybox()
 	float a = glm::radians(-90.f);
 	rotationMatrix = glm::rotate(a, rotationAxis);
 
-	glm::mat4 translationMatrix = glm::translate(glm::vec3(0.0f,0.0f,0.0f));
+	glm::mat4 translationMatrix = glm::translate(cam_position);
 	
 	glm::mat4 modelMatrix = translationMatrix * rotationMatrix * scalingMatrix;
 
 	// Matrice Model-Vue-Projection:
-	glm::mat4 mvp = CVar::projection * glm::mat4(glm::mat3(CVar::vue)) * modelMatrix;
+	glm::mat4 mvp = CVar::projection * CVar::vue * modelMatrix;
 
 	GLuint handle;
 
