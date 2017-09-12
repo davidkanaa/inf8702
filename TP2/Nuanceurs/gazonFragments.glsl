@@ -115,7 +115,7 @@ void spotLight(in vec3 lightVect, in vec3 normal)
    VP = normalize(VP);
 
    // Calculer l'atténuation due à la distance
-   attenuation = 1.0 / dot(Lights[0].Attenuation, vec3(1.0, d, pow(d, 2)));
+   attenuation = 1.0 / dot(Lights[1].Attenuation, vec3(1.0, d, pow(d, 2)));
 
    // Le fragment est-il à l'intérieur du cône de lumière ?
    vec3 spotDir = normalize(Lights[1].SpotDir);  // normalize in case the `Lights[1].SpotDir` isn't a unit vector 
