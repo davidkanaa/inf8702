@@ -50,9 +50,10 @@ uniform sampler2D normalMap;      // Unité de texture pour le bruit
 // Calcule la spécularité d'une source lumineuse
 vec4 lightSpec(in int i, in vec3 normal, in vec3 halfVector, in float shininess)
 {
-    // À compléter
-    // ...
-    return vec4(0.0);
+    //
+	float specCos = max(0.0, dot(normal, halfVector));
+	vec3 spec = pow(specCos, shininess) * Lights[i].Specular;
+    return vec4(spec, 1.0);
 }
 
 void main (void) 
@@ -67,11 +68,14 @@ void main (void)
     vec3 noise;
     
     // Propriétés de la surface
+
+	vec4 surfaceColour;
     if(gl_FrontFacing)
     {	
         frontColor = frontFragColor;
+
         // Sampling de la texture
-        // ...
+        surfaceColour = texture(frontColorMap, fragTexCoord);
         
         // Propriétés de la surface
         matSpecular  = frontMat.Specular;
@@ -94,8 +98,9 @@ void main (void)
     else
     {
         backColor = backFragColor;
+
         // Sampling de la texture
-        // ...
+        surfaceColour = texture(backColorMap, vec2(1.0 - fragTexCoord.x, fragTexCoord.y));
 
         // Propriétés de la surface
         matSpecular  = backMat.Specular;
@@ -109,7 +114,7 @@ void main (void)
     vec4 specular = vec4(0.0, 0.0, 0.0, 1.0);
 
     // À dé-commenter
-    /*
+	#if 1
     if (pointLightOn == 1) {
         specular +=  lightSpec(0, normal, Light0HV, 400.0);
     }
@@ -119,9 +124,9 @@ void main (void)
     if (spotLightOn == 1) {
         specular +=  lightSpec(1, normal, Light1HV, 400.0);
     }
-    */
-    
+    #endif
+
     // Ajout de la contribution spéculaire au fragement
     trueColor += specular * matSpecular;
-    color = clamp(trueColor, 0.0, 1.0);
+    color = vec4(clamp(trueColor, 0.0, 1.0).rgb * surfaceColour.rgb, surfaceColour.a);
 }
