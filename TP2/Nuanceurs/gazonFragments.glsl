@@ -174,7 +174,7 @@ vec4 flight(in vec3 light0Vect, in vec3 light1Vect, in vec3 light2Vect, in vec3 
 
 void main (void) 
 {
-	//
+	// 0:ponctuelle  1:spot  2:directionnelle
     vec3 light0Vect;
     vec3 light1Vect;
     vec3 light2Vect;
