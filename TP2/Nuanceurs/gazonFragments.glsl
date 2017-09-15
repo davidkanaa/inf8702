@@ -55,7 +55,7 @@ void pointLight(in vec3 lightVect, in vec3 normal)
    VP = lightVect;
 
    // Calculer distance à la lumière
-   d = length(lightVect);
+   d = length(VP);
 
    // Normaliser VP
    VP = normalize(VP);
@@ -109,7 +109,7 @@ void spotLight(in vec3 lightVect, in vec3 normal)
    VP = lightVect;
 
    // Calculer la distance à al lumière
-   d = length(lightVect);
+   d = length(VP);
 
    // Normaliser VP
    VP = normalize(VP);
@@ -120,7 +120,9 @@ void spotLight(in vec3 lightVect, in vec3 normal)
    // Le fragment est-il à l'intérieur du cône de lumière ?
    vec3 spotDir = normalize(Lights[1].SpotDir);  // normalize in case the `Lights[1].SpotDir` isn't a unit vector 
    vec3 lightDir = -VP;
-   angleEntreLumEtSpot = degrees(acos(dot(lightDir, spotDir)));
+
+   float spotCos = dot(lightDir, spotDir);
+   angleEntreLumEtSpot = degrees(acos(spotCos));
 
    if (angleEntreLumEtSpot > Lights[1].SpotCutoff)
    {
@@ -128,7 +130,7 @@ void spotLight(in vec3 lightVect, in vec3 normal)
    }
    else
    {
-       spotAttenuation = 1.0; // there's no spot attenuation whenever the ray is within the cone of the spotlight
+       spotAttenuation = pow(spotCos, Lights[1].SpotExp); // there's no spot attenuation whenever the ray is within the cone of the spotlight
 
    }
 
@@ -186,7 +188,7 @@ void main (void)
 
     // Compléter afin d'ajouter la contribution de la texture:
     vec4 out_color;
-    out_color = flight(light0Vect, light1Vect, light2Vect, normal);
+    out_color = flight(light0Vect, light1Vect, light2Vect, csnormal);
     
     //Contribution de la texture:
     vec4 surfaceColour = texture(colorMap, fragTexCoord);

@@ -72,7 +72,7 @@ void pointLight(in int i, in vec3 normal, in vec3 eye, in vec3 csPosition3)
 	VP = lightVect;
 
 	// Calculer distance à la lumière
-	d = length(lightVect);
+	d = length(VP);
 
 	// Normaliser VP
 	VP = normalize(VP);
@@ -103,7 +103,7 @@ void spotLight(in int i, in vec3 normal, in vec3 eye, in vec3 csPosition3)
 	VP = lightVect;
 
 	// Calculer la distance à al lumière
-	d = length(lightVect);
+	d = length(VP);
 
 	// Normaliser VP
 	VP = normalize(VP);
@@ -114,7 +114,9 @@ void spotLight(in int i, in vec3 normal, in vec3 eye, in vec3 csPosition3)
 	// Le fragment est-il à l'intérieur du cône de lumière ?
 	vec3 spotDir = normalize(Lights[i].SpotDir);  // normalize in case the `Lights[1].SpotDir` isn't a unit vector 
 	vec3 lightDir = -VP;
-	angleEntreLumEtSpot = degrees(acos(dot(lightDir, spotDir)));
+
+	float spotCos = acos(dot(lightDir, spotDir));
+	angleEntreLumEtSpot = degrees(spotCos);
 
 	if (angleEntreLumEtSpot > Lights[i].SpotCutoff)
 	{
@@ -122,7 +124,7 @@ void spotLight(in int i, in vec3 normal, in vec3 eye, in vec3 csPosition3)
 	}
 	else
 	{
-		spotAttenuation = 1.0; // there's no spot attenuation whenever the ray is within the cone of the spotlight
+		spotAttenuation = pow(spotCos, Lights[i].SpotExp); // there's no spot attenuation whenever the ray is within the cone of the spotlight
 
 	}
 
