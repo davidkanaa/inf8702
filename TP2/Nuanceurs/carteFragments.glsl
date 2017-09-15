@@ -82,7 +82,7 @@ void main (void)
         matShininess = frontMat.Shininess;
 
         // Échantillonnage du bruit de perlin
-        noise = texture(normalMap, fragTexCoord).rgb;
+        noise = texture(normalMap, fragTexCoord).xyz;
 
         // Perturbation de la normale
         if (perlinOn == 1) {
