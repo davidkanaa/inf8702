@@ -296,9 +296,9 @@ void tsTransform(in vec3 csNormal, vec3 csTangent, vec3 csPosition)
     vec3 light1Vect = normalize(Lights[1].Position.xyz - csPosition);
     vec3 light2Vect = normalize(-Lights[2].Position.xyz);
 
-    Light0HV   = normalize(EyeDir - light0Vect);
-    Light1HV   = normalize(EyeDir - light1Vect);
-    Light2HV   = normalize(EyeDir - light2Vect);
+    Light0HV   = normalize(EyeDir + light0Vect);
+    Light1HV   = normalize(EyeDir + light1Vect);
+    Light2HV   = normalize(EyeDir + light2Vect);
 
     // Transformation dans l'espace tangent (on applique la matrice tsMatrix)
     Light0HV  = tsMatrix * Light0HV;
