@@ -37,7 +37,7 @@ out vec2 fragTexCoord;
 
 out vec3 offset;	// offset for light vectors
 
-out vec3 normal;	// normal vector
+out vec3 csnormal;	// normal vector
 
 
 
@@ -64,6 +64,6 @@ void main (void)
 	offset = csPosition3;
 
 	//
-	normal = normal_cameraSpace;
+	csnormal = normal_cameraSpace;
     
 }

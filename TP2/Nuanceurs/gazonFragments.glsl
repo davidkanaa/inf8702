@@ -35,7 +35,7 @@ in vec3 offset;
 
 in Mat material;
 
-in vec3 normal;
+in vec3 csnormal;
 
 out vec4 color;
 
