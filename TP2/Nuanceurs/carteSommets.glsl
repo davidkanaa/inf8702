@@ -258,12 +258,12 @@ void animate(inout vec4 position, inout vec3 normal, inout vec3 tangent)
         // Déformation sur l'axe des X selon la position X
         deltaPos = amplitude * sin(vt.x * PI);
 		theta = 0.5 * (vt.x - 0.5) * PI * sin(-amplitude);
-		rotMat = rotMatY(theta);
+		rotMat = rotMatY(-theta);
     } else {
         // Déformation sur l'axe des Y, selon la position Y
         deltaPos = amplitude * sin(vt.y * PI);
 		float theta = 0.5 * (vt.y - 0.5) * PI * sin(amplitude);
-		rotMat = rotMatY(theta);
+		rotMat = rotMatX(-theta);
     }
     
     // Obtenir le déplacement du sommets en cours
