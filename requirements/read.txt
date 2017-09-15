@@ -1,0 +1,8 @@
+Description
+------------
+For the project to run correctly, build it and add the files in this directory to the target.
+
+P.S.: If on Visual Studio, first make TP* the startup project.
+-----------
+
+
