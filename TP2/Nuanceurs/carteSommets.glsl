@@ -80,7 +80,7 @@ void pointLight(in int i, in vec3 normal, in vec3 eye, in vec3 csPosition3)
 	// Calculer l'atténuation due à la distance
 	attenuation = 1.0 / dot(Lights[i].Attenuation, vec3(1.0, d, pow(d, 2)));   
    
-	nDotVP = dot(normal, VP);
+	nDotVP = max(0.0, dot(normal, VP));
 
 	// Calculer les contributions ambiantes et diffuses
 	Ambient  += attenuation * vec4(Lights[i].Ambient, 1.0);
@@ -115,8 +115,8 @@ void spotLight(in int i, in vec3 normal, in vec3 eye, in vec3 csPosition3)
 	vec3 spotDir = normalize(Lights[i].SpotDir);  // normalize in case the `Lights[1].SpotDir` isn't a unit vector 
 	vec3 lightDir = -VP;
 
-	float spotCos = acos(dot(lightDir, spotDir));
-	angleEntreLumEtSpot = degrees(spotCos);
+	float spotCos = max(0.0, dot(lightDir, spotDir));
+	angleEntreLumEtSpot = degrees(acos(spotCos));
 
 	if (angleEntreLumEtSpot > Lights[i].SpotCutoff)
 	{
@@ -131,7 +131,7 @@ void spotLight(in int i, in vec3 normal, in vec3 eye, in vec3 csPosition3)
 	// Combine les atténuation du spot et de la distance
 	attenuation *= spotAttenuation;
 
-	nDotVP = dot(normal, VP);
+	nDotVP = max(0.0, dot(normal, VP));
 
 	// Calculer les contributions ambiantes et diffuses
 	Ambient  += attenuation * vec4(Lights[i].Ambient, 1.0);
@@ -154,7 +154,7 @@ void directionalLight(in int i, in vec3 normal)
 	// There is no attenuation due to distance (hypothesis for directional lights)
 	// attenuation = 1.0;
 
-	nDotVP = dot(normal, VP);
+	nDotVP = max(0.0, dot(normal, VP));
 
 	// Calculer les contributions ambiantes et diffuses
 	Ambient  += vec4(Lights[i].Ambient, 1.0);
