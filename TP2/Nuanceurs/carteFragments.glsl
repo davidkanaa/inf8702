@@ -82,17 +82,15 @@ void main (void)
         matShininess = frontMat.Shininess;
 
         // Échantillonnage du bruit de perlin
-        // noise = ...
+        noise = texture(normalMap, fragTexCoord).rgb;
 
         // Perturbation de la normale
-        /*
         if (perlinOn == 1) {
-            // normal = ...
+            normal = normalize(noise);
         } else {
-            // normal = ...
+            normal = vec3(0.0, 0.0, 1.0);
         }
-        */
-        normal = vec3(0.0, 0.0, 1.0);
+        //normal = vec3(0.0, 0.0, 1.0);
         trueColor = frontColor;
     }
     else
@@ -116,13 +114,13 @@ void main (void)
     // À dé-commenter
 	#if 1
     if (pointLightOn == 1) {
-        specular +=  lightSpec(0, normal, Light0HV, 400.0);
+        specular +=  lightSpec(0, normal, Light0HV, matShininess);
     }
     if (dirLightOn == 1) {
-        specular +=  lightSpec(2, normal, Light2HV, 100.0);
+        specular +=  lightSpec(2, normal, Light2HV, matShininess);
     }
     if (spotLightOn == 1) {
-        specular +=  lightSpec(1, normal, Light1HV, 400.0);
+        specular +=  lightSpec(1, normal, Light1HV, matShininess);
     }
     #endif
 
