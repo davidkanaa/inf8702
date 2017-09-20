@@ -679,9 +679,10 @@ void CScene::LancerRayons( void )
 			
 			// Enregistrer les composantes R, G et B de la couleur du pixel dans la
 			// structure linéaire m_PixelInfo de taille ResolutionX * ResolutionY * 3
-			m_InfoPixel[((j * m_ResLargeur + i) * 3) + 0] = colour.r;
-			m_InfoPixel[((j * m_ResLargeur + i) * 3) + 1] = colour.g;
-			m_InfoPixel[((j * m_ResLargeur + i) * 3) + 2] = colour.b;
+			int index = (j * m_ResLargeur + i) * 3;
+			m_InfoPixel[index + 0] = colour.r;
+			m_InfoPixel[index + 1] = colour.g;
+			m_InfoPixel[index + 2] = colour.b;
 
 		}
 
