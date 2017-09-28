@@ -170,6 +170,102 @@ CIntersection CQuadrique::Intersection( const CRayon& Rayon )
 	// S'il y a collision, ajuster les variables suivantes de la structure intersection :
 	// Normale, Surface intersectée et la distance
 
+#if 1
+
+	// light ray origin coordinates
+	CVecteur3 origin = Rayon.ObtenirOrigine();
+	REAL x0 = origin.x;
+	REAL y0 = origin.y;
+	REAL z0 = origin.z;
+
+	// light ray direction
+	CVecteur3 direction = Rayon.ObtenirDirection();
+	REAL xd = direction.x;
+	REAL yd = direction.y;
+	REAL zd = direction.z;
+
+	// quadric's matrix coefficients
+	//
+	REAL A = m_Quadratique.x;
+	REAL E = m_Quadratique.y;
+	REAL H = m_Quadratique.z;
+	//
+	REAL B = m_Mixte.z;
+	REAL C = m_Mixte.y;
+	REAL F = m_Mixte.x;
+	//
+	REAL D = m_Lineaire.x;
+	REAL G = m_Lineaire.y;
+	REAL I = m_Lineaire.z;
+	//
+	REAL J = m_Cst;
+
+	// intersection coefficients
+	REAL aq = A*xd*xd + E*yd*yd + H*zd*zd + B*xd*yd + C*xd*zd + F*yd*zd;
+	REAL bq = (2.0f*A*x0*xd + B*(x0*yd + xd*y0) + C*(x0*zd + xd*z0) + D*xd + 2.0f*E*y0*yd + F*(y0*zd + yd*z0) + G*yd + 2.0f*H*z0*zd + I*zd);
+	REAL cq = A*x0*x0 + B*x0*y0 + C*x0*z0 + D*x0 + E*y0*y0 + F*y0*z0 + G*y0 + H*z0*z0 + I*z0 + J;
+
+	// determine t
+	REAL t;
+	if (aq == EPSILON)
+	{
+		t = Max<REAL>(0.0f, -cq / bq);
+		// t = -cq / bq;
+	}
+	else
+	{
+		REAL delta = bq*bq - 4.0f*aq*cq;
+
+		if (delta < 0.0f)
+		{
+			// no solution
+			return Result;
+		}
+
+		REAL sqrtDelta = sqrt(delta);
+
+		REAL t0, t1;
+		t0 = (-bq + sqrtDelta) / (2.0f * aq);
+		t1 = (-bq - sqrtDelta) / (2.0f * aq);
+
+		if (t0 <= EPSILON && t1 <= EPSILON)
+		{
+			// no solution
+			return Result;
+		}
+		else if (t0 <= EPSILON && t1 > EPSILON)
+		{
+			t = t1;
+		}
+		else if (t0 > EPSILON && t1 <= EPSILON)
+		{
+			t = t0;
+		}
+		else
+		{
+			t = Min<REAL>(t0, t1);
+		}
+		
+	}
+
+	// compute intersection point
+	CVecteur3 intersect(origin + t*direction);
+
+	// compute the normal
+	CVecteur3 normal( 
+					  ( 2.0f*A*intersect.x + B*intersect.y + C*intersect.z + D), 
+					  ( B*intersect.x + 2.0f*E*intersect.y + F*intersect.z + G),
+					  ( C*intersect.x + F*intersect.y + 2.0f*H*intersect.z + I)
+					);
+
+	normal = CVecteur3::Normaliser(normal);
+
+	//
+	Result.AjusterSurface(this);
+	Result.AjusterNormale(normal);
+	Result.AjusterDistance(abs(t));
+
+# endif
 	return Result;
 }
 

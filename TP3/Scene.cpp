@@ -637,9 +637,10 @@ void CScene::LancerRayons( void )
 
 			//
 			CVecteur3 P0 = m_Camera.Position;
-			REAL d = m_Camera.Focale;
-			REAL theta = PI * m_Camera.Angle / 180.0f;	// This angle was provided in degrees and is hereby converted to radians
-			REAL phi = (m_ResLargeur / m_ResHauteur) * theta;
+			REAL d = m_Camera.Focale; // CVecteur3::Distance(m_Camera.PointVise, m_Camera.Position);
+			REAL theta = m_Camera.Angle / RENDRE_REEL(2.0);
+			//d = m_ResHauteur / (2 * tan(theta));
+			REAL phi = atan((m_ResLargeur / m_ResHauteur) * tan(theta));
 
 			// Ajuster l’origine du rayon au centre de la caméra
 			lightRay.AjusterOrigine(P0);
@@ -647,19 +648,20 @@ void CScene::LancerRayons( void )
 			// Calculer la direction du rayon vers la coordonnée réelle du pixel ( Px,Py )
 
 			//
-			REAL P1x = P0.x - d * tan(theta);
-			REAL P1y = P0.y - d * tan(phi);
+			REAL P1x = P0.x - d * tan(phi);
+			REAL P1y = P0.y - d * tan(theta);
 
 			//
-			REAL P2x = P0.x + d * tan(theta);
-			REAL P2y = P0.y + d * tan(phi);
+			REAL P2x = P0.x + d * tan(phi);
+			REAL P2y = P0.y + d * tan(theta);
 
 			//
-			REAL Px = P1x + ((i + 0.5f) / m_ResLargeur) * (P2x - P1x);
-			REAL Py = P1y + ((j + 0.5f) / m_ResHauteur) * (P2y - P1y);
+			REAL Px = P1x + ((i + RENDRE_REEL(0.5)) / m_ResLargeur) * (P2x - P1x);
+			REAL Py = P1y + ((j + RENDRE_REEL(0.5)) / m_ResHauteur) * (P2y - P1y);
 
 			CVecteur3 rayDirection(Px, Py, d);
 			rayDirection -= P0;
+			//rayDirection = CVecteur3::Normaliser(rayDirection);
 
 			// Ajuster l'orientation du rayon ( utiliser la matrice Orientation de la camera qui est déjà calculé pour vous ) et le normaliser
 			rayDirection = rayDirection * m_Camera.Orientation;
