@@ -137,6 +137,41 @@ CIntersection CTriangle::Intersection( const CRayon& Rayon )
 	// Notez que la normale du triangle est déjà calculée lors du prétraitement
 	// il suffit que de la passer à la structure d'intersection.
 
+	// light ray origin coordinates
+	CVecteur3 O = Rayon.ObtenirOrigine();
+
+	// light ray direction
+	CVecteur3 D = Rayon.ObtenirDirection();
+
+	//
+	CVecteur3 E1(m_Pts[1] - m_Pts[0]);
+	CVecteur3 E2(m_Pts[2] - m_Pts[0]);
+	CVecteur3 T(O - m_Pts[0]);
+
+	//
+	REAL alpha = CVecteur3::ProdScal(CVecteur3::ProdVect(D, E2), E1);
+
+	if (abs(alpha) > EPSILON)
+	{
+
+		CVecteur3 H(CVecteur3::ProdScal(CVecteur3::ProdVect(T, E1), E2), CVecteur3::ProdScal(CVecteur3::ProdVect(D, E2), T), CVecteur3::ProdScal(CVecteur3::ProdVect(T, E1), D));
+		CVecteur3 sol = (1/alpha) * H;
+
+		if (sol.y >= EPSILON && sol.z >= EPSILON && sol.y + sol.z <= 1.0f)
+		{
+			// compute intersection point
+			REAL t = sol.x;
+			CVecteur3 intersect(O + t*D);
+
+
+			//
+			Result.AjusterSurface(this);
+			Result.AjusterNormale(m_Normale);
+			Result.AjusterDistance(abs(t));
+		}
+	}
+
+
     return Result;
 }
 
