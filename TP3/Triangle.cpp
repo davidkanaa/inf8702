@@ -157,7 +157,7 @@ CIntersection CTriangle::Intersection( const CRayon& Rayon )
 		CVecteur3 H(CVecteur3::ProdScal(CVecteur3::ProdVect(T, E1), E2), CVecteur3::ProdScal(CVecteur3::ProdVect(D, E2), T), CVecteur3::ProdScal(CVecteur3::ProdVect(T, E1), D));
 		CVecteur3 sol = (1/alpha) * H;
 
-		if (sol.y >= EPSILON && sol.z >= EPSILON && sol.y + sol.z <= 1.0f)
+		if (sol.y >= EPSILON && sol.z >= EPSILON && sol.y + sol.z <= 1)
 		{
 			// compute intersection point
 			REAL t = sol.x;
