@@ -547,8 +547,6 @@ namespace Math3D
 	///////////////////////////////////////////////////////////////////////////////
 	inline const CVecteur3 CVecteur3::Reflect( const CVecteur3& Vecteur, const CVecteur3& Normal )
 	{
-		// À COMPLÉTER ...
-
 		CVecteur3 I = Vecteur;
 		CVecteur3 N = Normal;
 		CVecteur3 R = I - 2.0f * CVecteur3::ProdScal(I, N) * N;
@@ -573,7 +571,14 @@ namespace Math3D
 	{
 		CVecteur3 Result;
 
-		// À COMPLÉTER ...
+		// There is a refracted ray if the indice ratio is positive and smaller than 1: n2/n1 =< 1
+		// and the incidence angle is smaller than the critical angle: sin(acos(dot(I, n))) = norm(I - dot(I, n)n) < n2/n1
+
+		CVecteur3 Z = IndiceRefractionRatio * Vecteur - Max<REAL>(CVecteur3::ProdScal(Vecteur, Normal), EPSILON) * Normal;
+		if (((1.0f / IndiceRefractionRatio) < RENDRE_REEL(1.0f)) && ( CVecteur3::Norme(Z) < RENDRE_REEL(1.0f) ))
+		{
+			Result = Z - RENDRE_REEL(sqrt(1 - CVecteur3::Norme(Z)*CVecteur3::Norme(Z))) * Normal;
+		}
 
 		return Result;
 	}
