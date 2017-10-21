@@ -93,14 +93,14 @@ void CFBO::Init( int w, int h )
    glBindTexture(m_Target, m_Texture);
    glTexParameteri(m_Target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
    glTexParameteri(m_Target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-   glTexImage2D(m_Target, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+   glTexImage2D(m_Target, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
    // Créer une texture de profondeurs pour les couleurs avec L'ID m_Profondeur:
    glGenTextures(1, &m_Profondeur);
    glBindTexture(m_Target, m_Profondeur);
    glTexParameteri(m_Target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
    glTexParameteri(m_Target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-   glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_TextureW, m_TextureH, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+   glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_TextureW, m_TextureH, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 
 
    // Attacher nos deux textures au frame buffer à des fin d'affichage (DRAW):
@@ -222,5 +222,5 @@ void CFBO::TerminerCapture()
 	// Remettre OpenGL dans l'état par défaut
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, m_TextureW, m_TextureH);
+	glViewport(0, 0, CVar::currentW, CVar::currentH);
 }

@@ -10,5 +10,5 @@ void main (void)
    gl_Position = vec4(vp,1.0);
    
    // Passage des coordonnées normalisees de texture pour le nuanceur de fragment
-   fragTexCoord = (vp.xy + vec2(1.0, 1.0)) / 2.0;
+   fragTexCoord = 0.5 * (vp.xy + vec2(1.0, 1.0));
 }
