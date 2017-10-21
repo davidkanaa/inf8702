@@ -75,7 +75,7 @@ CFBO::~CFBO()
 ///////////////////////////////////////////////////////////////////////////////
 void CFBO::Init( int w, int h )
 {
-#if 1
+
    // Dimensions
    m_TextureW = w;
    m_TextureH = h;
@@ -104,39 +104,9 @@ void CFBO::Init( int w, int h )
 
 
    // Attacher nos deux textures au frame buffer à des fin d'affichage (DRAW):
-   glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_Texture, 0);   glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_Profondeur, 0);
+   glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_Texture, 0);
+   glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_Profondeur, 0);
 
-#else
-	// Dimensions
-	m_TextureW = w;
-	m_TextureH = h;
-
-	// TODO: Remplir la fonction d'initialisation d'un FBO:
-
-	// Création et liaison du FBO
-	glGenFramebuffers(1, &m_FBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
-
-	// Création de la texture RGB pour les couleurs 
-	// (on veut des filtres de mignification et magnification de type NEAREST pour échantillonner plus tard des valeurs exactes)
-	glGenTextures(1, &m_Texture);
-	glBindTexture(GL_TEXTURE_2D, m_Texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_TextureW, m_TextureH, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-
-	// Création de la texture RGB pour les couleurs
-	glGenTextures(1, &m_Profondeur);
-	glBindTexture(m_Target, m_Profondeur);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_TextureW, m_TextureH, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-
-	// Attacher nos deux textures au frame buffer à des fin d'affichage (DRAW):
-	glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_Texture, 0);
-	glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_Profondeur, 0);
-
-#endif
 
 	// Vérification des erreurs FBO
 	// Nous vous fournissons cette vérification d'erreurs
