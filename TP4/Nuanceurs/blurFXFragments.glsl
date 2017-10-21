@@ -14,7 +14,7 @@ float v_step = 1.0/resH;
 
 float LineariserProfondeur(float d)
 {
-	float n = 0.1; //
+	float n = 0.1;
 	float f = 200.0;
 	
 	return(2.0 * n) / (f + n - d * (f - n));	
@@ -77,36 +77,35 @@ void main (void)
 	{
 		color = vec4(0.0, 0.0, 0.0, 1.0);
 	}
+	
 	else
 	{
-
-		//TODO : Ajouter le flou gaussien:
 		//Couleur du FBO:
 		clear_color = vec4(texture(colorMap, fragTexCoord.xy).rgb, 1.0);
-   
+		
 		// Quantifier la différence de profondeur entre le point visé et le fragment courant:
 		// Utilisez LineariserProfondeur() sur les profondeurs échantillonnées
-		// depth = ... 
-		// center_depth =  ... 
+		depth = LineariserProfondeur(texture(depthMap, fragTexCoord.xy).x);
+		center_depth = LineariserProfondeur(texture(depthMap, vec2(0.5, 0.5)).x); 
 
 		// Le poids est simplement la différence absolue entre ces deux valeurs:
-		// w= ...
+		w = abs(depth - center_depth);
 
 		// Appliquer un filtre gaussien (étendue de 1) :
-		// blurred_col = ...
+		blurred_col = FiltreGaussien(fragTexCoord.x, fragTexCoord.y, 1.0);
+		
 		// Appliquer un filtre gaussien avec une plus grande étendue (ex.: 5) :
-		// blurred_col += ...
+		blurred_col += FiltreGaussien(fragTexCoord.x, fragTexCoord.y, 5.0);
+		
 		// Moyenne des deux filtres :
-		// blurred_col = ...
-
-		// À modifier :
-		// Ajuster la couleur selon la différence de profondeur entre le point visé et le fragment courant:
-		color = clear_color;
+		blurred_col = blurred_col / 2.0;
+		
+		// Ajustement de la couleur selon la différence de profondeur entre le point visé et le fragment courant
+		color = (1.0 - w)*clear_color + w*blurred_col;
 		
 
 		// Afin de déboguer, on peut affichier simplement les valeurs de profondeurs:
 		// color = vec4(depth, depth, depth, 1.0);
-	
 	}
     
 	color = clamp(color, 0.0, 1.0);

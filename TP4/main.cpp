@@ -167,16 +167,16 @@ int main(int argc,char *argv[])
 	
 	// vérification de la version 4.X d'openGL
 	glewInit();
-	if (glewIsSupported("GL_VERSION_4_5"))
-		printf("Pret pour OpenGL 4.5\n\n");
+	if (glewIsSupported("GL_VERSION_4_4"))
+		printf("Pret pour OpenGL 4.4\n\n");
 	else {
-		printf("\nOpenGL 4.5 n'est pas supporte! \n");
+		printf("\nOpenGL 4.4 n'est pas supporte! \n");
 		exit(1);
 	}
 
 	// Specifier le context openGL
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 
@@ -327,13 +327,15 @@ void initialisation (void) {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
-	// TODO :
-	// Création du frame buffer object pour pré-rendu de la scène:
-	// Quelle taille devrait avoir nos textures?
+	// Création du frame buffer object pour pré-rendu de la scène
+	fbo = new CFBO();
+	fbo->Init(CVar::currentW, CVar::currentH);
+
 
 	// TODO 
 	// Création des trois FBOs pour cartes d'ombres:
     // Utilisez CCst::tailleShadowMap
+	
 	
 
 	construireMatricesProjectivesEclairage();
@@ -862,24 +864,20 @@ void dessinerQuad(void)
 ///////////////////////////////////////////////////////////////////////////////
 void dessinerScene()
 {
-	
-
 	//////////////////	 Préparer l'affichage:	//////////////////
 	
 	// Peupler nos textures de profondeur selon la géométrie courante de la scène:
 	construireCartesOmbrage();
 
-	// TODO Décommenter les conditions:
-
-	//if (CVar::FBOon) {
-		// TODO : 
-		// Activer le FBO pour l'affichage
-	//}
-	//else {
+	if (CVar::FBOon) {
+		// Activation du FBO pour l'affichage
+		fbo->CommencerCapture();
+	}
+	else {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glViewport(0, 0, CVar::currentW, CVar::currentH);
-	//}
+	}
 	
 	//////////////////     Afficher les objets:  ///////////////////////////
 	glDisable(GL_DEPTH_TEST);
@@ -898,12 +896,11 @@ void dessinerScene()
 		dessinerModele3D(modele3Dbuddha, buddhaModelMatrix, mat_cuivre_model);
 	}
 
-	// TODO Décommenter les conditions:
-	//if (CVar::FBOon){
-		//TODO :
-		//Si on utilisait le FBO, le désactiver et dessiner le quad d'écran:
-
-	//}
+	if (CVar::FBOon){
+		//Désactivation du FBO et dessin du quad d'écran
+		fbo->TerminerCapture();
+		dessinerQuad();
+	}
 	
 
 	// Fonction d'aide pour mieux visualiser le contenu des shadowMaps
