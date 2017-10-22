@@ -36,7 +36,7 @@ uniform samplerCube specMap;
 uniform mat4 modelMatrix;		// matrice de modélisation courante (M).
 uniform vec3 EyePos_worldSpace;	// position de l'oeil en coord. universelles
 uniform int IBLon;
-in vec4 Position_objectSpace;   // position du sommet/fragment en coord. d'objet
+in vec3 Position_objectSpace;   // position du sommet/fragment en coord. d'objet
 in vec3 Normal_objectSpace;	    // normale du sommet/fragment en coord. d'objet
 
 
@@ -216,21 +216,21 @@ vec4 lightingIBL()
     // utilise habituellement) il faut trouver la normal Matrix en coord universelles
     // C'est facile, la normalMatrix est toujours uniquement la sous-matrice 3X3
     // de la matrice utilisée pour placer les modèles tant que l'on scale uniformément...
-    // normalMatrix_wolrdSpace = ...
+    normalMatrix_wolrdSpace = mat3(modelMatrix);
 
     // Calcul de la normale en coordonnées universelles (world coord)
-    // normal_worldSpace = ...
+    normal_worldSpace = normalize( normalMatrix_wolrdSpace * Normal_objectSpace );
 
     // Lire la contribution diffuse du fragment dans la carte spéculaire.
-    // Diffuse += ...
+    Diffuse += texture( diffMap, normal_worldSpace );
 
     // Pour le calcul spéculaire, on veut échantillonner la texture spéculaire 
 	// là ou la reflexion du vecteur wcEyedir est reflétée.
 
-    // vertexPos_worldSpace = ...
-    // eyeDir_worldSpace = ...
-    // reflectDir_wordlSpace = ...
-    // Specular += ...
+    vertexPos_worldSpace = (modelMatrix * vec4(Position_objectSpace, 1.0)).xyz;    
+    eyeDir_worldSpace = normalize(EyePos_worldSpace - vertexPos_worldSpace);
+    reflectDir_wordlSpace = normalize( reflect(-eyeDir_worldSpace, normal_worldSpace) );
+    Specular += texture(specMap, reflectDir_wordlSpace);
 
     // Ajout des contribution lumineuses calculées
     resColor += Diffuse * matDiffuse;
